@@ -45,3 +45,6 @@ tgt_len = 6 # dec_input(=dec_output) max sequence length
 
 enc_inputs, dec_inputs, dec_outputs = data.dataprocess.make_data(sentence, src_vocab, tgt_vocab)
 loader = Data.DataLoader(data.dataprocess.MyDataSet(enc_inputs, dec_inputs, dec_outputs), 2, True)
+
+if __name__ == '__main__':
+    print(sentence)
