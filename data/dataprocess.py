@@ -1,16 +1,40 @@
 import torch.nn
 import torch.utils.data as Data
 
+src_len = 512
+tgt_len = 128
+
 def make_data(sentences, src_vocab, tgt_vocab):
     enc_inputs, dec_inputs, dec_outputs = [], [], []
     for i in range(len(sentences)):
-      enc_input = [[int(src_vocab[n]) for n in sentences[i][0].split()]] # [[1, 2, 3, 4, 0], [1, 2, 3, 5, 0]]
-      dec_input = [[int(tgt_vocab[n]) for n in sentences[i][1].split()]] # [[6, 1, 2, 3, 4, 8], [6, 1, 2, 3, 5, 8]]
-      dec_output = [[int(tgt_vocab[n]) for n in sentences[i][2].split()]] # [[1, 2, 3, 4, 8, 7], [1, 2, 3, 5, 8, 7]]
+        enc_input, dec_input, dec_output = [], [], []
+        for n in sentences[i][0].split():
+            if n in src_vocab.keys():
+                enc_input.append(src_vocab[n])
+            else:
+                enc_input.append(src_vocab['<UNK>'])
+        while len(enc_input) < src_len:
+            enc_input.append(src_vocab['<NONE>'])
 
-      enc_inputs.extend(enc_input)
-      dec_inputs.extend(dec_input)
-      dec_outputs.extend(dec_output)
+        for n in sentences[i][1].split():
+            if n in tgt_vocab.keys():
+                dec_input.append(tgt_vocab[n])
+            else:
+                dec_input.append(tgt_vocab['<UNK>'])
+        while len(dec_input) < tgt_len:
+            dec_input.append(tgt_vocab['<NONE>'])
+
+        for n in sentences[i][2].split():
+            if n in tgt_vocab.keys():
+                dec_output.append(tgt_vocab[n])
+            else:
+                dec_output.append(tgt_vocab['<UNK>'])
+        while len(dec_output) < tgt_len:
+            dec_output.append(tgt_vocab['<NONE>'])
+
+        enc_inputs.append(enc_input)
+        dec_inputs.append(dec_input)
+        dec_outputs.append(dec_output)
 
     return torch.LongTensor(enc_inputs), torch.LongTensor(dec_inputs), torch.LongTensor(dec_outputs)
 

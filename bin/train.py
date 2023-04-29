@@ -32,13 +32,13 @@ def train():
         loss.backward()
         optimizer.step()
     
-    enc_inputs, _, _ = next(iter(loader))
-    enc_inputs = enc_inputs.cuda()
-    for i in range(len(enc_inputs)):
-        greedy_dec_input = test.greedy_decoder(transformer, enc_inputs[i].view(1, -1), start_symbol=tgt_vocab["S"], tgt_vocab=tgt_vocab)
-        predict, _, _, _ = transformer(enc_inputs[i].view(1, -1), greedy_dec_input)
-        predict = predict.data.max(1, keepdim=True)[1]
-        print(enc_inputs[i], '->', [idx2word[n.item()] for n in predict.squeeze()])
+    # enc_inputs, _, _ = next(iter(loader))
+    # enc_inputs = enc_inputs.cuda()
+    # for i in range(len(enc_inputs)):
+    #     greedy_dec_input = test.greedy_decoder(transformer, enc_inputs[i].view(1, -1), start_symbol=tgt_vocab["S"], tgt_vocab=tgt_vocab)
+    #     predict, _, _, _ = transformer(enc_inputs[i].view(1, -1), greedy_dec_input)
+    #     predict = predict.data.max(1, keepdim=True)[1]
+    #     print(enc_inputs[i], '->', [idx2word[n.item()] for n in predict.squeeze()])
 
 if __name__ == '__main__':
     train()

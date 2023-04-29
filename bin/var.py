@@ -4,6 +4,7 @@ sys.path.append(".")
 sys.path.append("..")
 
 import csv
+import json
 import data.dataprocess
 import torch.utils.data as Data
 
@@ -14,34 +15,37 @@ d_k = d_v = 64  # dimension of K(=Q), V
 n_layers = 6  # number of Encoder of Decoder Layer
 n_heads = 8  # number of heads in Multi-Head Attention
 
+sentences = []
+with open("/data/alumpuk/github/TransCodeSum/data/train/train_sbt.token.code", "r") as sbt_file:
+    sbts = sbt_file.readlines()
+with open("/data/alumpuk/github/TransCodeSum/data/train/train_tmp.token.nl", "r") as nl_file:
+    nls = nl_file.readlines()
+for i in range(len(nls)):
+    sentence = []
+    sentence.append(sbts[i])
+    sentence.append(nls[i])
+    sentence.append(nls[i])
+    sentences.append(sentence)
 
-# reading data
-sentence, src_vocab, tgt_vocab = [], {}, {}
-with open('../data/original.csv', 'r', encoding="utf-8") as original:
-    reader = csv.reader(original)
-    for line in reader:
-        sentence.append(line)
+with open("/data/alumpuk/github/TransCodeSum/data/vocab/src_vocab.json", "r") as src_vocab_file:
+    src_vocab = json.load(src_vocab_file)
 
-with open('../data/src_mapping.csv', 'r', encoding="utf-8") as src_mapping:
-    reader = csv.reader(src_mapping)
-    for line in reader:
-        src_vocab[line[0]] = line[1]
+with open("/data/alumpuk/github/TransCodeSum/data/vocab/tgt_vocab.json", "r") as tgt_vocab_file:
+    tgt_vocab = json.load(tgt_vocab_file)
 
-with open('../data/tgt_mapping.csv', 'r', encoding="utf-8") as tgt_mapping:
-    reader = csv.reader(tgt_mapping)
-    for line in reader:
-        tgt_vocab[line[0]] = line[1]
-
-original.close()
-src_mapping.close()
-tgt_mapping.close()
+with open("/data/alumpuk/github/TransCodeSum/data/vocab/idx2word.json", "r") as idx2word_file:
+    idx2word = json.load(idx2word_file)
 
 src_vocab_size = len(src_vocab)
-idx2word = {i: w for i, w in enumerate(tgt_vocab)}
 tgt_vocab_size = len(tgt_vocab)
+src_len = 512
+tgt_len = 128
 
-src_len = 5 # enc_input max sequence length
-tgt_len = 6 # dec_input(=dec_output) max sequence length
+sbt_file.close()
+nl_file.close()
+src_vocab_file.close()
+tgt_vocab_file.close()
+idx2word_file.close()
 
 enc_inputs, dec_inputs, dec_outputs = data.dataprocess.make_data(sentence, src_vocab, tgt_vocab)
 loader = Data.DataLoader(data.dataprocess.MyDataSet(enc_inputs, dec_inputs, dec_outputs), 2, True)
