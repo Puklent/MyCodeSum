@@ -5,8 +5,10 @@ sys.path.append("..")
 
 import csv
 import json
+import logging
 import data.dataprocess
 import torch.utils.data as Data
+from utils.logger import logger
 
 # Transformer parameters:
 d_model = 512  # Embedding Size
@@ -48,7 +50,8 @@ tgt_vocab_file.close()
 idx2word_file.close()
 
 enc_inputs, dec_inputs, dec_outputs = data.dataprocess.make_data(sentence, src_vocab, tgt_vocab)
-loader = Data.DataLoader(data.dataprocess.MyDataSet(enc_inputs, dec_inputs, dec_outputs), 2, True)
+
+logger.info('[ Data preprocess OK...                                           ]')
 
 if __name__ == '__main__':
     print(sentence)
